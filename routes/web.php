@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +52,21 @@ Route::get('/callback', function (Request $request) {
         'redirect_uri' => 'http://127.0.0.1:8001/callback',
         'code' => $request->code,
     ]);
+
+    $token = $response->json()['access_token'];
+
+    $userResponse = Http::withToken($token)->get('http://127.0.0.1:8000/api/user');
+    $userData = $userResponse->json();
+
+    $user = User::updateOrCreate(
+        ['email' => $userData['email']], 
+        ['name' => $userData['name']],
+    );
+
+    // Fazer login do usuário
+    Auth::login($user);
  
-    return $response->json();
+    return redirect('/');
+ 
+    //return $response->json();
 });

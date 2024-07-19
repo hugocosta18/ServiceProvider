@@ -19,9 +19,9 @@
             <div class="text-center">
                 <div style="display: flex; align-items: center;">
                     <i class="fa-solid fa-calendar-days fa-2xl" style="color: #B197FC; margin-right: 20px"></i>
-                    <h1 class="text-8xl font-extrabold text-white">Publish it!</h1>
+                    <h1 class="text-8xl font-extrabold" style="color: #b197fc">Publish it!</h1>
                 </div>
-                <p>Your words - publisher app</p>
+                <p style="color: #ffd43b">Your words - publisher app</p>
                 @if (Route::has('login'))
                     <livewire:welcome.navigation />
                 @endif

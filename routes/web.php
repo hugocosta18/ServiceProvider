@@ -43,15 +43,15 @@ Route::get('/redirect', function (Request $request) {
     $request->session()->put('state', $state = Str::random(40));
  
     $query = http_build_query([
-        'client_id' => '9c8f0d51-e0fb-4448-8ca8-a05aadf70ecb',
-        'redirect_uri' => 'http://127.0.0.1:8001/callback',
+        'client_id' => config('services.passport.client_id'),
+        'redirect_uri' => config('services.passport.redirect_uri'),
         'response_type' => 'code',
         'scope' => '',
         'state' => $state,
         // 'prompt' => '', // "none", "consent", or "login"
     ]);
- 
-    return redirect('http://127.0.0.1:8000/oauth/authorize?'.$query);
+
+    return redirect (config('services.passport.url') . '/oauth/authorize?' . $query);
 });
 
 
@@ -64,30 +64,33 @@ Route::get('/callback', function (Request $request) {
         'Invalid state value.'
     );*/
  
-    $response = Http::asForm()->post('http://127.0.0.1:8000/oauth/token', [
+    $response = Http::asForm()->post(config('services.passport.url') . '/oauth/token', [
         'grant_type' => 'authorization_code',
-        'client_id' => '9c8f0d51-e0fb-4448-8ca8-a05aadf70ecb',
-        'client_secret' => 'vMTKQnDiercz6ni2xMDQQuwzZUkpIz9Wqblfm87e',
-        'redirect_uri' => 'http://127.0.0.1:8001/callback',
+        'client_id' => config('services.passport.client_id'),
+        'client_secret' => config('services.passport.client_secret'),
+        'redirect_uri' => config('services.passport.redirect_uri'),
         'code' => $request->code,
     ]);
 
     $token = $response->json()['access_token'];
 
-    $userResponse = Http::withToken($token)->get('http://127.0.0.1:8000/api/user');
+    $userResponse = Http::withToken($token)->get(config('services.passport.url') . '/api/user');
     $userData = $userResponse->json();
 
     $user = User::updateOrCreate(
-        ['email' => $userData['email']], 
-        ['name' => $userData['name']],
+        
+        ['email' => $userData['email']],
+        [
+            'name' => $userData['name'],
+            'password' => Hash::make(Str::random(24)),
+        ],
+    
     );
 
-    // Fazer login do usuário
+  
     Auth::login($user);
- 
-    return redirect('/');
- 
-    //return $response->json();
+
+    return redirect('/posts');
 });
 
 require __DIR__.'/auth.php';

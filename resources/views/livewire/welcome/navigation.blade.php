@@ -1,6 +1,6 @@
 <div class="sm:fixed sm:top-0 sm:right-0 p-6 text-end z-10">
     @auth
-        <a href="{{ url('/dashboard') }}" class="font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500" wire:navigate>Dashboard</a>
+        <a href="{{ url('/posts.index') }}" class="font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500" wire:navigate>Home</a>
         @else
         <a href="{{ route('login') }}" class="font-bold text-gray-800 bg-green-400 hover:bg-green-500 px-6 py-3 rounded-md mr-4" style="background-color: #B197FC;">Log in</a>
         

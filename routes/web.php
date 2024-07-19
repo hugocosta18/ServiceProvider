@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\User;
+use App\Http\Controllers\PostController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +21,15 @@ use App\Models\User;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('posts', [PostController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('posts.index');
+
+Route::post('posts', [PostController::class, 'store'])
+    ->middleware(['auth', 'verified'])
+    ->name('posts.store');
+
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])

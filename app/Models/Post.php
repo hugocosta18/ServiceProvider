@@ -8,4 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['content', 'publish_at'];
+
+    protected $dates = [
+        'publish_at',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
+

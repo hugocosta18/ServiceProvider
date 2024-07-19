@@ -33,6 +33,10 @@
                                 </span>
                             @enderror
                         </div>
+                        <div class="form-group mt-2">
+                            <label for="publish_at" class="block text-sm font-medium text-gray-700">Publish At (optional)</label>
+                            <input type="datetime-local" name="publish_at" id="publish_at" class="form-control block w-full mt-1 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                        </div>
                         <div class="form-group mt-2" style="display: flex; justify-content: flex-end;">
                             <x-primary-button class="ms-3" style="margin: 0">
                                 {{ __('Post') }}
@@ -60,6 +64,7 @@
                             <div>
                                 <div class="text-sm font-semibold text-gray-800">{{ $post->user->name }}</div>
                                 <p class="text-gray-600 mt-2">{{ $post->content }}</p>
+                                <p class="text-gray-600 mt-2">To publish at: {{ \Carbon\Carbon::parse($post->publish_at)->format('d/m/Y')}}</p>
                                 <div class="text-sm text-gray-500 mt-2">{{ $post->created_at->format('h:i A - d M, Y') }}</div>
                             </div>
                         </div>

@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\User;
+use App\Http\Controllers\PostController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -20,19 +22,36 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('posts', [PostController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('posts.index');
+
+Route::post('posts', [PostController::class, 'store'])
+    ->middleware(['auth', 'verified'])
+    ->name('posts.store');
+
+
+Route::view('dashboard', 'dashboard')
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
+Route::view('profile', 'profile')
+    ->middleware(['auth'])
+    ->name('profile');
+
 Route::get('/redirect', function (Request $request) {
     $request->session()->put('state', $state = Str::random(40));
  
     $query = http_build_query([
-        'client_id' => '9c8c04b6-79c1-4333-a47a-6424c4850b37',
-        'redirect_uri' => 'http://127.0.0.1:8001/callback',
+        'client_id' => config('services.passport.client_id'),
+        'redirect_uri' => config('services.passport.redirect_uri'),
         'response_type' => 'code',
         'scope' => '',
         'state' => $state,
         // 'prompt' => '', // "none", "consent", or "login"
     ]);
- 
-    return redirect('http://127.0.0.1:8000/oauth/authorize?'.$query);
+
+    return redirect (config('services.passport.url') . '/oauth/authorize?' . $query);
 });
 
 
@@ -45,28 +64,33 @@ Route::get('/callback', function (Request $request) {
         'Invalid state value.'
     );*/
  
-    $response = Http::asForm()->post('http://127.0.0.1:8000/oauth/token', [
+    $response = Http::asForm()->post(config('services.passport.url') . '/oauth/token', [
         'grant_type' => 'authorization_code',
-        'client_id' => '9c8c04b6-79c1-4333-a47a-6424c4850b37',
-        'client_secret' => 'oM7rUqtBj5F9kmLVv7hjox8qbhPVBo1bPWDmL1xl',
-        'redirect_uri' => 'http://127.0.0.1:8001/callback',
+        'client_id' => config('services.passport.client_id'),
+        'client_secret' => config('services.passport.client_secret'),
+        'redirect_uri' => config('services.passport.redirect_uri'),
         'code' => $request->code,
     ]);
 
     $token = $response->json()['access_token'];
 
-    $userResponse = Http::withToken($token)->get('http://127.0.0.1:8000/api/user');
+    $userResponse = Http::withToken($token)->get(config('services.passport.url') . '/api/user');
     $userData = $userResponse->json();
 
     $user = User::updateOrCreate(
-        ['email' => $userData['email']], 
-        ['name' => $userData['name']],
+        
+        ['email' => $userData['email']],
+        [
+            'name' => $userData['name'],
+            'password' => Hash::make(Str::random(24)),
+        ],
+    
     );
 
-    // Fazer login do usuário
+  
     Auth::login($user);
- 
-    return redirect('/');
- 
-    //return $response->json();
+
+    return redirect('/posts');
 });
+
+require __DIR__.'/auth.php';

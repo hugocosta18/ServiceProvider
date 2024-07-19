@@ -64,9 +64,17 @@ new #[Layout('layouts.guest')] class extends Component
                 </a>
             @endif
 
-            <x-primary-button class="ms-3">
+            <x-primary-button class="ms-3" style="margin-right: 0">
                 {{ __('Log in') }}
             </x-primary-button>
         </div>
     </form>
+    <hr style="margin-top: 20px">
+    <div style="margin-top: 20px">
+        <form action="{{ url('/redirect') }}" method="GET" class="inline" style="width: 100%">
+            <x-secondary-button type="submit" class="ms-3" style="width: 100%; margin: 0">
+                {{ __('Login with Your Words app') }}
+            </x-secondary-button>
+        </form>
+    </div>
 </div>

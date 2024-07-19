@@ -78,3 +78,5 @@ Route::get('/callback', function (Request $request) {
  
     //return $response->json();
 });
+
+require __DIR__.'/auth.php';
